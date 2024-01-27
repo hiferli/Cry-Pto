@@ -4,7 +4,7 @@ export const getCustomData = (request , response) => {
     let max = parseFloat(request.query.max) || 100;
     let prev = parseFloat(request.query.prev) || 0;
 
-    console.log({min , max , prev})
+    // console.log({min , max , prev})
     const y = +((Math.random() * (max - min) + min).toFixed(2));
     const x = prev + 1;
 

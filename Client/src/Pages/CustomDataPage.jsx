@@ -31,10 +31,10 @@ const CustomDataPage = () => {
             setXData([...xData, values.x])
             setYData([...yData, values.y])
 
-            if(yData.length > 100){
-                setXData(xData.slice(1));
-                setYData(yData.slice(1));
-            }
+            // if(yData.length > 100){
+            //     setXData(xData.slice(1));
+            //     setYData(yData.slice(1));
+            // }
         })
             .catch(error => console.log(error))
     };
@@ -81,7 +81,7 @@ const CustomDataPage = () => {
 
     return (
         <div className='container'>
-            <h1 className='header'>Custom Graph</h1>
+            <h1 className='header'>Cry-Pto: Your Crypto</h1>
 
             <div className='info'>
                 <Box className='metrics' sx={{ width: 300 }}>
