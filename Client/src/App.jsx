@@ -2,11 +2,18 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import LineGraph from './Components/Charts/LineGraph'
 import axios from 'axios'
+import Slider from '@mui/material/Slider';
+import Box from '@mui/material/Box';
 
 function App() {
+	const minDistance = 5;
 	const [xData, setXData] = useState([0]);
 	const [yData, setYData] = useState([0]);
-	const [metrics, setMetrics] = useState({});
+	const [metrics, setMetrics] = useState({
+		min: 10,
+		max: 100,
+		freq: 1
+	});
 
 	const getData = async () => {
 		await axios.get(
@@ -20,16 +27,11 @@ function App() {
 			}
 		).then((response) => {
 			const values = response.data.coordinates;
-			setXData([...xData , values.x])
-			setYData([...yData , values.y])
+			setXData([...xData, values.x])
+			setYData([...yData, values.y])
 		})
-		.catch(error => console.log(error))
+			.catch(error => console.log(error))
 	};
-
-	const updateMetrics = (event) => {
-		event.preventDefault();
-		setMetrics({...metrics , [event.target.name]: event.target.value})
-	}
 
 	useEffect(() => {
 		const interval = setInterval(() => {
@@ -38,21 +40,74 @@ function App() {
 
 		return () => clearInterval(interval);
 	}, [xData])
-	
+
+	function valuetext(value) {
+		return `${value}`;
+	}
+
+	const handleChange = (event , newValue , activeThumb) => {
+		if(event.target.name == 'range'){
+			// handleRangeChange(event)
+			if (!Array.isArray(newValue)) {
+				return;
+			}
+
+			if (newValue[1] - newValue[0] < minDistance) {
+				if (activeThumb === 0) {
+					const clamped = Math.min(newValue[0], 100 - minDistance);
+					const min = clamped;
+					const max = clamped + minDistance;
+					setMetrics({ ...metrics, min: min, max: max });
+				} else {
+					const clamped = Math.max(newValue[1], minDistance);
+					const max = clamped;
+					const min = clamped - minDistance;
+					setMetrics({ ...metrics, min: min, max: max });
+				}
+			} else {
+				setMetrics({ ...metrics, min: newValue[0], max: newValue[1] });
+			}
+		} else if(event.target.name === 'freq') {
+			// handleFrequencyChange(event);
+			setMetrics({...metrics, [event.target.name]: newValue});
+		}
+	}
 
 	return (
 		<>
 			<h1>Graph</h1>
-			
+
 			<div>
-				<label htmlFor="min">Min Value:</label>
-				<input onChange={updateMetrics} type="number" name='min' id='min' min={1}  />
-					<br />
-				<label htmlFor="max">Max Value:</label>
-				<input onChange={updateMetrics} type="number" name='max' id='max' min={1}  />
-					<br />
-				<label htmlFor="freq">Frequency:</label>
-				<input onChange={updateMetrics} type="number" name='freq' id='freq' min={1} />
+				<Box sx={{ width: 300 }}>
+					<Slider
+						getAriaLabel={() => 'Minimum distance shift'}
+						value={[metrics.min, metrics.max]}
+						onChange={handleChange}
+						valueLabelDisplay="auto"
+						getAriaValueText={valuetext}
+						disableSwap
+						name='range'
+						id='range'
+					/>
+					<h2>Range: {metrics.max} - {metrics.min}</h2>
+
+					<Slider
+						name='freq'
+						id='freq'
+						aria-label="Small steps"
+						defaultValue={metrics.freq}
+						value={metrics.freq}
+						onChange={handleChange}
+						getAriaValueText={valuetext}
+						step={1}
+						marks
+						min={1}
+						max={5}
+						valueLabelDisplay="auto"
+						/>
+					<h2>Frequency: {metrics.freq}</h2>
+
+				</Box>
 			</div>
 
 			<LineGraph xData={xData} yData={yData} />
