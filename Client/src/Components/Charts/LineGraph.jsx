@@ -9,9 +9,10 @@ const LineGraph = ({xData , yData}) => {
                 series={[
                     {
                         data: yData   ,
+                        color: '#F2944B'
                     },
                 ]}
-                width={500}
+                width={1000}
                 height={300}
             />
         </div>
