@@ -30,6 +30,11 @@ const CustomDataPage = () => {
             const values = response.data.coordinates;
             setXData([...xData, values.x])
             setYData([...yData, values.y])
+
+            if(yData.length > 100){
+                setXData(xData.slice(1));
+                setYData(yData.slice(1));
+            }
         })
             .catch(error => console.log(error))
     };
